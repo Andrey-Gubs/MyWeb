@@ -1,0 +1,11 @@
+[Unit]
+Description=restart
+After=network.target
+User=root
+
+[Service]
+ExecStart=/root/web/res.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -20,7 +20,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/Andrey-Gubs/myapp:latest .
+        run: docker build -t ghcr.io/andrey-gubs/myapp:latest .
 
       - name: Push Docker image
-        run: docker push ghcr.io/Andrey-Gubs/myapp:latest
+        run: docker push ghcr.io/andrey-gubs/myapp:latest

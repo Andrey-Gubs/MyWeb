@@ -5,9 +5,11 @@ on:
     branches: [ main ]
 jobs:
   build:
-    runs-on: ubuntu-latest # Запуск на последней версии Ubuntu
-
+    runs-on: ubuntu-latest  
     steps:
-    - uses: actions/checkout@v4 # Выгрузка вашего кода из репозитория
-    - name: Build and push Docker image (build locally for now)
-      run: docker build -t my-local-app:latest .
+    - uses: actions/checkout@v3 
+    - name: Build Docker image
+      run: docker build -t ghcr.io/${{ github.repository_owner }}/myweb:latest .
+
+    - name: Push Docker image
+      run: docker push ghcr.io/${{ github.repository_owner }}/myweb:latest

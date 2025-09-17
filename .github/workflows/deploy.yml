@@ -30,12 +30,7 @@ jobs:
           printf "%s\n" "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
-      - name: Deploy on server
-        if: github.event_name == 'push'
-        env:
-          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
-          SSH_USER: ${{ secrets.DEPLOY_USER }}
-          SSH_PORT: ${{ secrets.DEPLOY_PORT || 22 }}
+      - name: Add server to known_hosts (auto)
         run: |
           ssh -p "$SSH_PORT" -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" << 'EOF'
             set -euo pipefail

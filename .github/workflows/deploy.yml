@@ -2,19 +2,17 @@ name: Deploy
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 permissions:
   contents: read
-concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: true
-
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production   # Включи Required reviewers в Settings → Environments
 
     steps:
       - name: Checkout repo
@@ -25,20 +23,17 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Add server to known_hosts (auto)
+      - name: Add server to known_hosts
         run: |
-          HOST="${{ secrets.DEPLOY_HOST }}"
-          PORT="${{ secrets.DEPLOY_PORT }}"
-          [ -z "$PORT" ] && PORT=22
           install -m 700 -d ~/.ssh
-          ssh-keyscan -H -p "$PORT" -t ed25519,ecdsa,rsa "$HOST" > ~/.ssh/known_hosts
+          printf "%s\n" "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
+
       - name: Deploy on server
-        if: github.event_name == 'push'
         env:
           SSH_HOST: ${{ secrets.DEPLOY_HOST }}
           SSH_USER: ${{ secrets.DEPLOY_USER }}
-          SSH_PORT: ${{ secrets.DEPLOY_PORT || 22 }}
+          SSH_PORT: ${{ secrets.DEPLOY_PORT }}
         run: |
           PORT="${SSH_PORT:-22}"
           ssh -p "$PORT" -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" << 'EOF'
@@ -49,4 +44,3 @@ jobs:
             docker rm -f myapp 2>/dev/null || true
             docker run -d --restart unless-stopped --name myapp -p 5003:5003 myapp:latest
           EOF
-

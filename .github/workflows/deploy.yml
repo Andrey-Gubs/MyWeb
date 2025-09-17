@@ -36,5 +36,5 @@ jobs:
             docker rm -f myapp 2>/dev/null || true
             docker run -d --restart unless-stopped --name myapp \
               -p 5003:5003 \
-              -v /home/deploy/web:/app/myapp
+              -v /home/deploy/web:/app/myapp:latest
           EOF

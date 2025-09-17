@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   workflow_run:
-    workflows: ["Build & Push Image"]
+    workflows: ["Build and Push Docker image"]
     types: [completed]
 
 permissions:

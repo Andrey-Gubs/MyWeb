@@ -25,6 +25,9 @@ jobs:
 
       - name: Add server to known_hosts
         run: |
+          HOST="${{ secrets.DEPLOY_HOST }}"
+          PORT="${{ secrets.DEPLOY_PORT }}"
+          [ -z "$PORT" ] && PORT=22
           install -m 700 -d ~/.ssh
           printf "%s\n" "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts

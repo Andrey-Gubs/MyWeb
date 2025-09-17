@@ -26,10 +26,12 @@ jobs:
 
       - name: Add server to known_hosts (auto)
         run: |
+          HOST="${{ secrets.DEPLOY_HOST }}"
+          PORT="${{ secrets.DEPLOY_PORT }}"
+          [ -z "$PORT" ] && PORT=22
           install -m 700 -d ~/.ssh
-          printf "%s\n" "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          ssh-keyscan -H -p "$PORT" -t ed25519,ecdsa,rsa "$HOST" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
-
       - name: Deploy on server
         if: github.event_name == 'push'
         env:
@@ -37,11 +39,11 @@ jobs:
           SSH_USER: ${{ secrets.DEPLOY_USER }}
           SSH_PORT: ${{ secrets.DEPLOY_PORT || 22 }}
         run: |
-          ssh -p "$SSH_PORT" -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" << 'EOF'
+          PORT="${SSH_PORT:-22}"
+          ssh -p "$PORT" -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" << 'EOF'
             set -euo pipefail
             cd /home/deploy/web
             git pull --ff-only origin main || true
-
             docker build --pull -t myapp:latest .
             docker rm -f myapp 2>/dev/null || true
             docker run -d --restart unless-stopped --name myapp -p 5000:5000 myapp:latest

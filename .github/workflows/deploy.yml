@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
-      name: production   # Включи Required reviewers в Settings → Environments
+      name: production  
 
     steps:
       - name: Checkout repo
@@ -23,15 +23,6 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Add server to known_hosts
-        run: |
-          HOST="${{ secrets.DEPLOY_HOST }}"
-          PORT="${{ secrets.DEPLOY_PORT }}"
-          [ -z "$PORT" ] && PORT=22
-          install -m 700 -d ~/.ssh
-          ssh-keyscan -H -p "$PORT" -t ed25519,ecdsa,rsa "$HOST" > ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
-
       - name: Deploy on server
         env:
           SSH_HOST: ${{ secrets.DEPLOY_HOST }}
@@ -39,11 +30,11 @@ jobs:
           SSH_PORT: ${{ secrets.DEPLOY_PORT }}
         run: |
           PORT="${SSH_PORT:-22}"
-          ssh -p "$PORT" -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" << 'EOF'
-            set -euo pipefail
+          ssh -p "$PORT" -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" << 'EOF'
             cd /home/deploy/web
             git pull --ff-only origin main || true
-            docker build --pull -t myapp:latest .
             docker rm -f myapp 2>/dev/null || true
-            docker run -d --restart unless-stopped --name myapp -p 5003:5003 myapp:latest
+            docker run -d --restart unless-stopped --name myapp \
+              -p 5003:5003 \
+              -v /home/deploy/web:/app/myapp
           EOF

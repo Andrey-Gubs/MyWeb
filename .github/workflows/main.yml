@@ -29,6 +29,6 @@ jobs:
             -t ghcr.io/andrey-gubs/myapp:sha-${GITHUB_SHA} .
 
       - name: Push Docker image
-         run: |
+        run: |
           docker push ghcr.io/andrey-gubs/myapp:latest
           docker push ghcr.io/andrey-gubs/myapp:sha-${GITHUB_SHA}

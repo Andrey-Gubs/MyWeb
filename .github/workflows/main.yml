@@ -21,6 +21,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: tags
+        id: vars
+        run: |
+          echo "image=ghcr.io/andrey-gubs/myapp" >> "$GITHUB_OUTPUT"
+          echo "sha_tag=sha-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "latest=latest" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build Docker image
         run: docker build -t ghcr.io/andrey-gubs/myapp:latest .

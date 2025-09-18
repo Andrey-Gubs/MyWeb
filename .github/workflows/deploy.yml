@@ -29,9 +29,13 @@ jobs:
           SSH_PORT: ${{ secrets.DEPLOY_PORT }}
         run: |
           PORT="${SSH_PORT:-22}"
-          IMAGE="ghcr.io/andrey-gubs/myapp:latest"
-          ssh -p "$PORT" -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" << 'EOF'
-            echo "IMAGE=$IMAGE"
+          SHA="${{ github.event.workflow_run.head_sha }}"
+          IMAGE="ghcr.io/andrey-gubs/myapp:sha-${SHA}"
+
+          echo "Deploying image: $IMAGE"
+
+          ssh -p "$PORT" -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" << EOF
+            set -euo pipefail
             docker pull "$IMAGE"
             docker rm -f myapp 2>/dev/null || true
             docker run -d --restart unless-stopped --name myapp \

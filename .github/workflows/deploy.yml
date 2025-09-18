@@ -34,7 +34,7 @@ jobs:
 
           echo "Deploying image: $IMAGE"
 
-          ssh -p "$PORT" -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" << EOF
+          ssh -p "$PORT" -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" << EOF
             set -euo pipefail
             docker pull "$IMAGE"
             docker rm -f myapp 2>/dev/null || true

@@ -5,11 +5,11 @@ on:
     branches: [ main ]
 jobs:
   build:
-    runs-on: ubuntu-latest # Запуск на последней версии Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4 # Выгрузка вашего кода из репозитория   
-    - name: Build and push Docker image (build locally for now)
+    - uses: actions/checkout@v4 
+    - name: Build and push Docker image 
       run: /
-        docker build -t my-local-app:latest .
+        docker build --platform linux/arm64 -t my-local-app:latest .
         echo "Image my-local-app:latest built successfully locally."

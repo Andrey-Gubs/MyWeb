@@ -20,33 +20,19 @@ jobs:
           
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
-      
-      - name: Build Docker image
+
+      - name: Set image tag
+        id: vars
+        run: echo "IMAGE_TAG=sha-${GITHUB_SHA::7}" >> $GITHUB_ENV
+        
+      - name: Build Docker image (arm64)
         run: |
           docker buildx build \
             --platform linux/arm64 \
+            -t ghcr.io/andrey-gubs/myapp:${IMAGE_TAG} \
             -t ghcr.io/andrey-gubs/myapp:latest \
-            -t ghcr.io/andrey-gubs/myapp:sha-${GITHUB_SHA} .
-            
-      - name: Push Docker image
-        run: |
-          docker push ghcr.io/andrey-gubs/myapp:latest
-          docker push ghcr.io/andrey-gubs/myapp:sha-${GITHUB_SHA}
-
-      - name: Prune old images (keep only latest + current sha)
-        env:
-          GH_TOKEN: ${{ secrets.GHCR_TOKEN }}   # PAT с read:packages, delete:packages
-        run: |
-          OWNER=andrey-gubs
-          PACKAGE=myapp
-          CUR=sha-${GITHUB_SHA}
-          gh api -H "Accept: application/vnd.github+json" \
-            /users/$OWNER/packages/container/$PACKAGE/versions --paginate \
-            -q '.[] | select((.metadata.container.tags | index("latest") | not) and (.metadata.container.tags | index("'"$CUR"'") | not)) .id' \
-          | while read -r id; do
-              gh api -X DELETE -H "Accept: application/vnd.github+json" \
-                /users/$OWNER/packages/container/$PACKAGE/versions/$id;
-            done
+            --push .
+     
 
 
     

@@ -2,4 +2,4 @@
     WORKDIR /app
     COPY . /app
     RUN pip install --no-cache-dir flask 
-    ENTRYPOINT ["python3", "./Web.py"]
+    ENTRYPOINT ["python3", "./web.py"]

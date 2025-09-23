@@ -20,7 +20,7 @@ jobs:
       
       - name: Build Docker image
         run: |
-          docker bildx build \
+          docker buildx build \
             --platform linux/arm64 \
             -t ghcr.io/andrey-gubs/myapp:latest \
             -t ghcr.io/andrey-gubs/myapp:sha-${GITHUB_SHA} .

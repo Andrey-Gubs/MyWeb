@@ -28,7 +28,7 @@ jobs:
       - name: Build Docker image (arm64)
         run: |
           docker buildx build \
-            --platform linux/arm64 \
+            --platform linux/amd64,linux/arm64 \
             -t ghcr.io/andrey-gubs/myapp:${IMAGE_TAG} \
             -t ghcr.io/andrey-gubs/myapp:latest \
             --push .

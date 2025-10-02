@@ -1,0 +1,8 @@
+replicaCount: 1
+enabled: true
+image:
+  repository: ghcr.io/andrey-gubs/myapp
+  tag: "latest"
+
+ingress:
+  enabled: true
